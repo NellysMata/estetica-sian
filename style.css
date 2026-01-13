@@ -104,7 +104,7 @@ img { max-width: 100%; display: block; }
     position: relative;
     padding-top: 80px; 
     text-align: center;
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?q=80&w=2070&auto=format&fit=crop');
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/hero.webp');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -175,7 +175,10 @@ img { max-width: 100%; display: block; }
 }
 .marquee-content span { padding: 0 4rem; }
 @keyframes scrollText { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
+.mayus{
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
 /* TRATAMIENTOS */
 .split-section {
     display: grid;
