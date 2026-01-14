@@ -41,7 +41,7 @@ class MobileMenuController {
         this.menuToggle = document.getElementById(CONFIG.selectors.mobileMenu);
         this.navList = document.getElementById(CONFIG.selectors.navList);
         this.navLinks = document.querySelectorAll(CONFIG.selectors.navLinks);
-        
+
         // Guard clause: if critical elements are missing, do not proceed
         if (!this.menuToggle || !this.navList) {
             console.warn('MobileMenuController: Required elements not found.');
@@ -57,7 +57,7 @@ class MobileMenuController {
      */
     init() {
         this.menuToggle.addEventListener('click', () => this.toggleMenu());
-        
+
         // Improve UX: Close menu when a link is clicked
         this.navLinks.forEach(link => {
             link.addEventListener('click', () => this.closeMenu());
@@ -88,7 +88,7 @@ class MobileMenuController {
      */
     updateIcon(isActive) {
         if (!this.icon) return;
-        
+
         if (isActive) {
             this.icon.classList.replace(CONFIG.classes.iconBars, CONFIG.classes.iconX);
         } else {
@@ -148,6 +148,9 @@ class ScrollTopController {
         this.isVisible = false;
         this.ticking = false;
 
+        // Caching last known scroll position to avoid reading DOM property unnecessarily
+        this.lastScrollY = 0;
+
         if (!this.button) return;
 
         this.init();
@@ -155,32 +158,47 @@ class ScrollTopController {
 
     init() {
         window.addEventListener('scroll', () => this.onScroll(), { passive: true });
-        
+
         this.button.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
 
     /**
-     * Handles scroll events with requestAnimationFrame to prevent layout thrashing.
+     * Handles scroll events.
+     * We capture the scroll value immediately in the event loop (READ phase)
+     * but defer the DOM update to the next animation frame (WRITE phase).
      */
     onScroll() {
+        // READ: Get scroll position cheaply (usually cached by browser, but good practice to isolate)
+        this.lastScrollY = window.scrollY;
+
         if (!this.ticking) {
             window.requestAnimationFrame(() => {
-                this.checkScrollPosition();
+                this.updateButtonVisibility();
                 this.ticking = false;
             });
             this.ticking = true;
         }
     }
 
-    checkScrollPosition() {
-        const shouldShow = window.scrollY > CONFIG.scrollThreshold;
-        
-        // Only touch the DOM if state changes
+    /**
+     * Updates DOM based on state. Pure WRITE phase.
+     * No layout properties (like offsetWidth, scrollY, etc.) should be read here.
+     */
+    updateButtonVisibility() {
+        // LOGIC: Determine state based on cached values
+        const shouldShow = this.lastScrollY > CONFIG.scrollThreshold;
+
+        // WRITE: Only touch the DOM if state actually changes
         if (shouldShow !== this.isVisible) {
             this.isVisible = shouldShow;
-            this.button.classList.toggle(CONFIG.classes.show, shouldShow);
+            if (shouldShow) {
+                this.button.classList.add(CONFIG.classes.show);
+                // Optional: Force a style recalc here if needed, but usually redundant
+            } else {
+                this.button.classList.remove(CONFIG.classes.show);
+            }
         }
     }
 }
@@ -190,6 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
     new MobileMenuController();
     new CookieConsentController();
     new ScrollTopController();
-    
+
     console.log('Sian Estetica scripts initialized.');
 });
