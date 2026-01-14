@@ -6,9 +6,11 @@
     --white: #FFFFFF;         
     --black: #111111;
     --text-dark: #1a1a1a;     
-    --text-grey: #444444; 
-    --accent-gold: #a68a64;   
+     --text-grey: #4a4a4a;
+     --accent-gold: #8d7249; 
     --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    
+  
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
